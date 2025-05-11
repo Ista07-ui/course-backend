@@ -1,9 +1,23 @@
+-- Select or create the database
 CREATE DATABASE IF NOT EXISTS course_app;
 
 USE course_app;
 
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'instructor', 'student') DEFAULT 'student',
+  avatar_url VARCHAR(500),
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create courses table
 CREATE TABLE IF NOT EXISTS courses (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   summary TEXT,
   description TEXT,
