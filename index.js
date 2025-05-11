@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/courses", courseRoutes);
+app.use("/api/courses", courseRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
