@@ -1,10 +1,23 @@
-const app = require('./src/app');
-const courseRoutes = require('./src/courseRoutes');
+import express from "express";
+import dotenv from "dotenv";
+import courseRoutes from "./routes/courses.js";
 
-const port = parseInt(process.env.PORT) || 3000;
+dotenv.config();
 
-app.use('/course', courseRoutes);
+const app = express();
+app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
+// Routes
+app.use("/courses", courseRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something broke!" });
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
