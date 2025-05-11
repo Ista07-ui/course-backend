@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import courseRoutes from "./routes/courses.js";
 import authRoutes from "./routes/auth.js";
+import uploadRoutes from "./routes/upload.js";
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ app.use(express.json());
 // Routes
 app.use("/api/courses", courseRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/uploads", express.static("uploads"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
