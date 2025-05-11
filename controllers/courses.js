@@ -3,10 +3,55 @@ import pool from "../connections/db.js";
 // Get all courses
 export const getCourses = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM courses");
+    const {
+      search,
+      language,
+      sortBy,
+      sortOrder,
+      limit = 10,
+      page = 1,
+    } = req.query;
+
+    let baseQuery = "SELECT * FROM courses";
+    const conditions = [];
+    const params = [];
+
+    // Search
+    if (search) {
+      conditions.push("(title LIKE ? OR summary LIKE ?)");
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    // Filter
+    if (language) {
+      conditions.push("language = ?");
+      params.push(language);
+    }
+
+    // Where clause
+    if (conditions.length > 0) {
+      baseQuery += " WHERE " + conditions.join(" AND ");
+    }
+
+    // Sort
+    const validSortFields = ["price", "average_review", "created_at", "title"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : null;
+    const order = sortOrder === "desc" ? "DESC" : "ASC";
+
+    if (sortField) {
+      baseQuery += ` ORDER BY ${sortField} ${order}`;
+    }
+
+    // Pagination
+    const limitInt = parseInt(limit, 10) || 10;
+    const offset = (parseInt(page, 10) - 1) * limitInt;
+    baseQuery += " LIMIT ? OFFSET ?";
+    params.push(limitInt, offset);
+
+    const [rows] = await pool.query(baseQuery, params);
     res.json(rows);
   } catch (err) {
-    console.error("Error while creating course:", err);
+    console.error("Error fetching courses:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
